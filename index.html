@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>Laser Tag Táctico</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- TensorFlow.js y modelo COCO-SSD para detección en el cilindro central -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js" defer></script>
+</head>
+<body>
+
+  <!-- ========================================================================
+       1. PANTALLA INICIAL (LOBBY MINIMALISTA)
+       ======================================================================== -->
+  <section id="lobby-screen" class="screen active">
+    <div class="lobby-container">
+      <!-- Barra superior limpia -->
+      <header class="lobby-header">
+        <div class="brand-block">
+          <span class="status-dot" id="network-status-dot"></span>
+          <div>
+            <h1 class="brand-title">LASER TAG</h1>
+            <p class="brand-subtitle" id="network-mode-label">Enlace local</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button
+            type="button"
+            id="btn-instructions"
+            class="btn-header"
+            onclick="document.getElementById('instructions-modal').classList.remove('hidden')"
+          >
+            ? Instrucciones
+          </button>
+          <button type="button" id="btn-firebase-settings" class="btn-header" title="Configurar Base de Datos">
+            Red
+          </button>
+        </div>
+      </header>
+
+      <!-- Jugador y Brigada -->
+      <div class="tactical-card">
+        <div class="form-row">
+          <label for="operator-alias" class="input-label">Nombre</label>
+          <input
+            type="text"
+            id="operator-alias"
+            class="tactical-input"
+            placeholder="Tu nombre"
+            maxlength="16"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="brigade-selector" role="radiogroup" aria-label="Seleccionar Brigada">
+          <button type="button" id="btn-brigade-alpha" class="brigade-btn alpha active" data-brigade="alpha">
+            <span class="brigade-badge">ALPHA</span>
+            <span class="brigade-name">Brigada Alpha</span>
+            <span class="brigade-count" id="alpha-count-badge">0 jugadores</span>
+          </button>
+          <button type="button" id="btn-brigade-bravo" class="brigade-btn bravo" data-brigade="bravo">
+            <span class="brigade-badge">BRAVO</span>
+            <span class="brigade-name">Brigada Bravo</span>
+            <span class="brigade-count" id="bravo-count-badge">0 jugadores</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Crear o Unirse a Sala -->
+      <div class="tactical-card">
+        <div class="room-controls-grid">
+          <button type="button" id="btn-create-room" class="btn-tactical primary">
+            Crear Sala
+          </button>
+
+          <div class="join-room-group">
+            <input
+              type="text"
+              id="room-code-input"
+              class="tactical-input code-input"
+              placeholder="CÓDIGO"
+              maxlength="4"
+              autocomplete="off"
+            />
+            <button type="button" id="btn-join-room" class="btn-tactical accent">
+              Unirse
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel de Sala Conectada -->
+        <div id="active-room-panel" class="active-room-panel hidden">
+          <div class="room-code-banner">
+            <div>
+              <span class="room-code-caption">Sala:</span>
+              <strong id="display-room-code" class="room-code-value">----</strong>
+            </div>
+            <button type="button" id="btn-copy-code" class="btn-mini">Copiar</button>
+          </div>
+
+          <div class="rosters-grid">
+            <div class="roster-column alpha-col">
+              <div class="roster-header">Brigada Alpha</div>
+              <ul id="roster-alpha" class="roster-list">
+                <li class="roster-empty">Sin jugadores</li>
+              </ul>
+            </div>
+            <div class="roster-column bravo-col">
+              <div class="roster-header">Brigada Bravo</div>
+              <ul id="roster-bravo" class="roster-list">
+                <li class="roster-empty">Sin jugadores</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arma Equipada -->
+      <div class="tactical-card">
+        <div class="equipped-weapon-summary">
+          <div class="equipped-thumb-wrap">
+            <img id="lobby-weapon-preview" src="" alt="Arma equipada" class="equipped-thumb" />
+          </div>
+          <div class="equipped-info">
+            <span id="lobby-weapon-category" class="weapon-cat-pill">Fusiles de Asalto</span>
+            <h3 id="lobby-weapon-name">M4A1 SOPMOD Block II</h3>
+            <p id="lobby-weapon-stats">5.56x45mm • 30 balas • Alcance 125m</p>
+          </div>
+          <button type="button" id="btn-open-armory-lobby" class="btn-tactical secondary">
+            Cambiar Arma
+          </button>
+        </div>
+      </div>
+
+      <!-- Botones de Inicio -->
+      <div class="deploy-actions">
+        <button type="button" id="btn-enter-combat" class="btn-deploy primary-deploy">
+          Iniciar Combate
+        </button>
+        <button type="button" id="btn-offline-test" class="btn-deploy offline-deploy">
+          Modo Prueba (1 Jugador)
+        </button>
+      </div>
+
+      <p id="lobby-feedback" class="lobby-feedback"></p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       2. PANTALLA DE COMBATE
+       ======================================================================== -->
+  <section id="combat-screen" class="screen">
+    <video id="camera-video" autoplay playsinline muted></video>
+
+    <div id="dummy-target-overlay" class="dummy-target-overlay hidden" aria-hidden="true">
+      <div class="dummy-silhouette">
+        <div class="dummy-head"></div>
+        <div class="dummy-torso">
+          <span>OBJETIVO</span>
+        </div>
+        <div class="dummy-legs"></div>
+      </div>
+    </div>
+
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- Guía del Cilindro Central -->
+    <div id="cylinder-hitbox-guide" class="cylinder-hitbox-guide">
+      <div class="cylinder-cap-top"></div>
+      <div class="cylinder-brackets">
+        <div class="cylinder-bracket-left"></div>
+        <div class="cylinder-center-reticle">
+          <span class="reticle-crosshair"></span>
+          <span id="hitmarker-flash" class="hitmarker-flash hidden">✕</span>
+        </div>
+        <div class="cylinder-bracket-right"></div>
+      </div>
+      <div class="cylinder-cap-bottom"></div>
+      <div class="cylinder-caption" id="cylinder-telemetry-label">
+        Zona de impacto
+      </div>
+    </div>
+
+    <!-- Zona libre de disparo -->
+    <div id="trigger-zone" class="trigger-zone" title="Toca para disparar"></div>
+
+    <!-- Arma en Primera Persona -->
+    <div id="fp-weapon-container" class="fp-weapon-container">
+      <div id="muzzle-flash" class="muzzle-flash hidden"></div>
+      <img id="fp-weapon-img" src="" alt="Arma en primera persona" class="fp-weapon-img" />
+    </div>
+
+    <!-- Barra Superior de Combate -->
+    <header class="combat-hud-top">
+      <div class="hud-top-left">
+        <button type="button" id="btn-exit-combat" class="hud-chip-btn danger">
+          Salir
+        </button>
+        <div class="hud-room-pill">
+          <span id="hud-room-badge">PRUEBA</span>
+          <span id="hud-brigade-badge" class="hud-brigade alpha">ALPHA</span>
+        </div>
+      </div>
+
+      <div class="hud-top-center">
+        <div id="shot-validation-banner" class="shot-validation-banner">
+          Toca la pantalla para disparar
+        </div>
+      </div>
+
+      <div class="hud-top-right">
+        <div class="hud-telemetry">
+          <span id="hud-ai-status">IA lista</span>
+          <span id="hud-compass-status">0°</span>
+          <span id="hud-gps-status">GPS</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Herramientas de Modo Prueba -->
+    <div id="test-mode-toolbar" class="test-mode-toolbar hidden">
+      <button type="button" id="btn-toggle-dummy" class="hud-chip-btn">
+        Silueta Prueba: OFF
+      </button>
+      <button type="button" id="btn-simulate-hit-me" class="hud-chip-btn warning">
+        Simular Eliminación
+      </button>
+    </div>
+
+    <!-- Controles Inferiores de Combate -->
+    <footer class="combat-hud-bottom">
+      <div class="ammo-panel">
+        <div class="ammo-counter">
+          <span id="hud-ammo-current" class="ammo-current">30</span>
+          <span class="ammo-sep">/</span>
+          <span id="hud-ammo-max" class="ammo-max">30</span>
+        </div>
+        <div class="weapon-meta">
+          <strong id="hud-weapon-name">M4A1 SOPMOD</strong>
+          <small id="hud-weapon-caliber">5.56x45mm • 125m</small>
+        </div>
+
+        <div id="reload-progress-wrap" class="reload-progress-wrap hidden">
+          <div id="reload-progress-bar" class="reload-progress-bar"></div>
+          <span class="reload-progress-text">Recargando...</span>
+        </div>
+      </div>
+
+      <div class="tactical-controls">
+        <button type="button" id="btn-reload" class="tac-action-btn reload-btn">
+          <span>Recargar</span>
+        </button>
+
+        <button type="button" id="btn-slide-rack" class="tac-action-btn rack-btn">
+          <span>Corredera</span>
+        </button>
+
+        <button type="button" id="btn-surface-toggle" class="tac-action-btn surface-btn">
+          <span id="surface-label">Suelo: Cemento</span>
+        </button>
+
+        <button type="button" id="btn-open-armory-hud" class="tac-action-btn armory-btn">
+          <span>Armas</span>
+        </button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ========================================================================
+       3. PANTALLA DE ELIMINACIÓN
+       ======================================================================== -->
+  <div id="elimination-overlay" class="elimination-overlay hidden" role="alertdialog" aria-modal="true">
+    <div class="elimination-content">
+      <h2 class="elimination-title">HAS SIDO ELIMINADO</h2>
+      <p class="elimination-killer">
+        Eliminado por: <strong id="eliminated-by-name">Jugador enemigo</strong>
+      </p>
+      <p class="elimination-details" id="eliminated-weapon-info">
+        Arma: M4A1 SOPMOD • Distancia: 24m
+      </p>
+      <div class="elimination-actions">
+        <button type="button" id="btn-respawn" class="btn-tactical primary large">
+          Reaparecer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       4. MODAL DE ARMERÍA (TALLER DE ARMAS DESHABILITADO Y OCULTO)
+       ======================================================================== -->
+  <div id="armory-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-window">
+      <header class="modal-header">
+        <div>
+          <h2>Seleccionar Arma</h2>
+          <p>Elige un arma oficial por categoría</p>
+        </div>
+        <button type="button" id="btn-close-armory" class="btn-close-modal">✕</button>
+      </header>
+
+      <!-- Pestañas de modo ocultas para deshabilitar el Taller de Armas -->
+      <div class="armory-mode-tabs hidden" aria-hidden="true">
+        <button type="button" id="tab-select-weapons" class="mode-tab active">Selector</button>
+        <button type="button" id="tab-create-weapon" class="mode-tab" disabled>Taller</button>
+      </div>
+
+      <!-- Selector de Armas Oficiales -->
+      <div id="armory-selector-view" class="armory-view">
+        <div id="category-tabs-bar" class="category-tabs-bar"></div>
+        <div id="weapons-grid" class="weapons-grid"></div>
+      </div>
+
+      <!-- Formulario del Taller de Armas oculto/deshabilitado en el DOM para mantener compatibilidad con app.js -->
+      <form id="weapon-workshop-form" class="armory-view hidden" aria-hidden="true">
+        <input type="file" id="weapon-image-input" accept="image/*" class="hidden-file-input" disabled />
+        <input type="checkbox" id="chk-remove-bg" disabled />
+        <img id="workshop-image-preview" src="" alt="" class="hidden" />
+        <span id="workshop-preview-placeholder" class="hidden"></span>
+        <select id="workshop-category-select" disabled></select>
+        <div id="new-category-row" class="hidden">
+          <input type="text" id="workshop-new-category" disabled />
+        </div>
+        <input type="text" id="workshop-name" disabled />
+        <input type="text" id="workshop-caliber" disabled />
+        <input type="number" id="workshop-mag" disabled />
+        <input type="number" id="workshop-firerate" disabled />
+        <input type="number" id="workshop-reload" disabled />
+        <input type="number" id="workshop-range" disabled />
+        <p id="workshop-feedback"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       5. MODAL DE INSTRUCCIONES (4 PASOS)
+       ======================================================================== -->
+  <div id="instructions-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-window small-modal">
+      <header class="modal-header">
+        <div>
+          <h2>Instrucciones</h2>
+          <p>Guía rápida en 4 pasos</p>
+        </div>
+        <button
+          type="button"
+          id="btn-close-instructions"
+          class="btn-close-modal"
+          onclick="document.getElementById('instructions-modal').classList.add('hidden')"
+        >
+          ✕
+        </button>
+      </header>
+
+      <div class="armory-view instructions-body">
+        <ol class="instructions-list">
+          <li>
+            <strong>1. Conectar celulares:</strong>
+            Ingresa tu nombre, elige tu brigada (Alpha o Bravo) y presiona <em>Crear Sala</em> para obtener un código de 4 letras. Los demás jugadores ingresan ese mismo código y tocan <em>Unirse</em>.
+          </li>
+          <li>
+            <strong>2. Apuntar con el cilindro central:</strong>
+            En combate, encuadra el cuerpo del jugador enemigo dentro del cilindro vertical del centro de la pantalla y toca cualquier parte libre para disparar.
+          </li>
+          <li>
+            <strong>3. Sin disparos a través de paredes:</strong>
+            En el instante de disparar, la cámara analiza únicamente el interior del cilindro central. Si hay una pared o puerta tapando al objetivo, no se detecta silueta humana y el disparo se anula.
+          </li>
+          <li>
+            <strong>4. Recarga y corredera:</strong>
+            Usa el botón <em>Recargar</em> cuando se agote el cargador y el botón <em>Corredera</em> para extraer manualmente un casquillo (escucharás el casquillo caer al suelo 400 ms después).
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       6. MODAL DE CONFIGURACIÓN DE RED / FIREBASE
+       ======================================================================== -->
+  <div id="firebase-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-window small-modal">
+      <header class="modal-header">
+        <div>
+          <h2>Configuración de Red</h2>
+          <p>Credenciales de Firebase Realtime Database</p>
+        </div>
+        <button type="button" id="btn-close-firebase" class="btn-close-modal">✕</button>
+      </header>
+
+      <form id="firebase-config-form" class="armory-view">
+        <div class="form-row">
+          <label for="fb-api-key" class="input-label">API Key</label>
+          <input type="text" id="fb-api-key" class="tactical-input" placeholder="AIzaSy..." />
+        </div>
+        <div class="form-row">
+          <label for="fb-db-url" class="input-label">Database URL</label>
+          <input
+            type="url"
+            id="fb-db-url"
+            class="tactical-input"
+            placeholder="https://tu-proyecto-default-rtdb.firebaseio.com"
+          />
+        </div>
+        <div class="form-row">
+          <label for="fb-project-id" class="input-label">Project ID</label>
+          <input type="text" id="fb-project-id" class="tactical-input" placeholder="tu-proyecto" />
+        </div>
+
+        <div class="workshop-actions split">
+          <button type="button" id="btn-reset-firebase" class="btn-tactical secondary">
+            Modo Local
+          </button>
+          <button type="submit" class="btn-tactical primary">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "tactical-lasertag-apk",
+  "version": "1.0.0",
+  "description": "Juego táctico Laser Tag / Airsoft con visión artificial y Web Audio API para Android APK",
+  "private": true,
+  "scripts": {
+    "sync": "npx cap sync android",
+    "build:apk": "cd android && gradlew.bat assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  }
+}

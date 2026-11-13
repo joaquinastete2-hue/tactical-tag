@@ -1,0 +1,1161 @@
+/**
+ * styles.css
+ * Diseño Minimalista: Fondo Negro Mate (#050505), Paneles Gris Oscuro (#0d0d0d) y Bordes Finos (#262626)
+ */
+
+:root {
+  --bg-dark: #050505;
+  --bg-panel: #0d0d0d;
+  --bg-card: #0d0d0d;
+  --bg-input: #141414;
+  --border-subtle: #262626;
+  --border-active: #525252;
+  --text-main: #f5f5f5;
+  --text-muted: #8c8c8c;
+  --accent-light: #e5e5e5;
+  --danger-red: #dc2626;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.hidden,
+#weapon-workshop-form,
+#tab-create-weapon,
+.armory-mode-tabs {
+  display: none !important;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ==========================================================================
+   1. PANTALLA DE LOBBY MINIMALISTA
+   ========================================================================== */
+#lobby-screen {
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: var(--bg-dark);
+  padding: env(safe-area-inset-top, 14px) 16px env(safe-area-inset-bottom, 20px);
+}
+
+.lobby-container {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 24px;
+}
+
+.lobby-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a3a3a3;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-main);
+}
+
+.brand-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-header,
+.btn-icon-subtle {
+  background: var(--bg-panel);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-header:active,
+.btn-icon-subtle:active {
+  background: #1a1a1a;
+}
+
+.tactical-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.input-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.tactical-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  outline: none;
+}
+
+.tactical-input:focus {
+  border-color: var(--border-active);
+}
+
+/* Selección de Brigada */
+.brigade-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.brigade-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.brigade-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #1f1f1f;
+  color: var(--text-muted);
+}
+
+.brigade-btn.active {
+  border-color: var(--text-main);
+  background: #1a1a1a;
+  color: var(--text-main);
+}
+
+.brigade-btn.active .brigade-badge {
+  background: var(--text-main);
+  color: var(--bg-dark);
+}
+
+.brigade-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.brigade-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Controles de Sala */
+.room-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 440px) {
+  .room-controls-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.join-room-group {
+  display: flex;
+  gap: 6px;
+}
+
+.code-input {
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 0.95rem;
+}
+
+.btn-tactical {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-tactical:active {
+  opacity: 0.85;
+}
+
+.btn-tactical.primary {
+  background: var(--text-main);
+  color: var(--bg-dark);
+  border-color: var(--text-main);
+}
+
+.btn-tactical.accent {
+  background: #262626;
+  color: var(--text-main);
+  border-color: #3a3a3a;
+}
+
+.btn-tactical.secondary {
+  background: var(--bg-input);
+  color: var(--text-main);
+  border-color: var(--border-subtle);
+}
+
+.btn-tactical.full-width {
+  width: 100%;
+}
+
+.active-room-panel {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.room-code-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.room-code-caption {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.room-code-value {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  letter-spacing: 2px;
+  margin-left: 6px;
+}
+
+.btn-mini {
+  background: var(--bg-panel);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.rosters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.roster-column {
+  background: var(--bg-input);
+  border-radius: 6px;
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.roster-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.roster-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 110px;
+  overflow-y: auto;
+  font-size: 0.78rem;
+}
+
+.roster-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+}
+
+.roster-item.dead {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.roster-empty {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+/* Arma Equipada en Lobby */
+.equipped-weapon-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.equipped-thumb-wrap {
+  width: 76px;
+  height: 52px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.equipped-thumb {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.equipped-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.weapon-cat-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+}
+
+.equipped-info h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.equipped-info p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Botones de Inicio */
+.deploy-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .deploy-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-deploy {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.primary-deploy {
+  background: var(--text-main);
+  color: var(--bg-dark);
+  border: 1px solid var(--text-main);
+}
+
+.offline-deploy {
+  background: var(--bg-panel);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+}
+
+.lobby-feedback {
+  font-size: 0.78rem;
+  text-align: center;
+  min-height: 18px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   2. PANTALLA DE COMBATE Y CILINDRO CENTRAL
+   ========================================================================== */
+#combat-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+#camera-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+#fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Silueta para Modo Prueba */
+.dummy-target-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 96px;
+  height: 290px;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.dummy-silhouette {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dummy-head {
+  width: 36px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.45);
+  border: 1.5px solid #dc2626;
+  margin-bottom: 4px;
+}
+
+.dummy-torso {
+  width: 68px;
+  height: 120px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.35);
+  border: 1.5px solid #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  padding: 4px;
+}
+
+.dummy-legs {
+  width: 50px;
+  height: 105px;
+  border-left: 16px solid rgba(220, 38, 38, 0.4);
+  border-right: 16px solid rgba(220, 38, 38, 0.4);
+  margin-top: 4px;
+}
+
+/* Guía del Cilindro Central (Limpia y Sutil) */
+.cylinder-hitbox-guide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18vw;
+  min-width: 68px;
+  max-width: 118px;
+  height: 54vh;
+  min-height: 230px;
+  max-height: 440px;
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cylinder-cap-top,
+.cylinder-cap-bottom {
+  width: 100%;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px dashed rgba(245, 245, 245, 0.65);
+}
+
+.cylinder-brackets {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.cylinder-bracket-left,
+.cylinder-bracket-right {
+  width: 8px;
+  height: 100%;
+  border-top: 1.5px solid rgba(245, 245, 245, 0.75);
+  border-bottom: 1.5px solid rgba(245, 245, 245, 0.75);
+}
+
+.cylinder-bracket-left {
+  border-left: 1.5px solid rgba(245, 245, 245, 0.75);
+}
+
+.cylinder-bracket-right {
+  border-right: 1.5px solid rgba(245, 245, 245, 0.75);
+}
+
+.cylinder-center-reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reticle-crosshair {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.hitmarker-flash {
+  position: absolute;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--danger-red);
+}
+
+.cylinder-caption {
+  position: absolute;
+  bottom: -24px;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  color: var(--text-main);
+  background: rgba(13, 13, 13, 0.85);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+}
+
+.cylinder-hitbox-guide.shot-hit .cylinder-cap-top,
+.cylinder-hitbox-guide.shot-hit .cylinder-cap-bottom,
+.cylinder-hitbox-guide.shot-hit .cylinder-bracket-left,
+.cylinder-hitbox-guide.shot-hit .cylinder-bracket-right {
+  border-color: var(--danger-red);
+}
+
+.cylinder-hitbox-guide.shot-miss .cylinder-cap-top,
+.cylinder-hitbox-guide.shot-miss .cylinder-cap-bottom,
+.cylinder-hitbox-guide.shot-miss .cylinder-bracket-left,
+.cylinder-hitbox-guide.shot-miss .cylinder-bracket-right {
+  border-color: #737373;
+}
+
+/* Gatillo táctil */
+.trigger-zone {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: crosshair;
+}
+
+/* Arma en Primera Persona */
+.fp-weapon-container {
+  position: absolute;
+  right: 2%;
+  bottom: 92px;
+  width: min(56vw, 310px);
+  height: min(36vh, 210px);
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  transform-origin: bottom right;
+  transition: transform 0.06s ease-out;
+}
+
+.fp-weapon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fp-weapon-container.recoil-active {
+  transform: translate3d(14px, 12px, 0) rotate(5deg);
+}
+
+.fp-weapon-container.rack-active {
+  transform: translate3d(18px, 5px, 0) rotate(2.5deg);
+}
+
+.muzzle-flash {
+  position: absolute;
+  top: 12%;
+  left: -14%;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #fde047 35%, rgba(249, 115, 22, 0) 70%);
+  pointer-events: none;
+}
+
+/* HUD Superior */
+.combat-hud-top {
+  position: absolute;
+  top: env(safe-area-inset-top, 10px);
+  left: 10px;
+  right: 10px;
+  z-index: 8;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.hud-top-left,
+.hud-top-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.hud-top-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.shot-validation-banner {
+  background: rgba(13, 13, 13, 0.9);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.shot-validation-banner.hit {
+  background: #7f1d1d;
+  border-color: var(--danger-red);
+  color: #fff;
+}
+
+.shot-validation-banner.blocked {
+  background: #1f1f1f;
+  border-color: #525252;
+  color: #d4d4d4;
+}
+
+.hud-chip-btn {
+  background: rgba(13, 13, 13, 0.9);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.hud-room-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(13, 13, 13, 0.9);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+}
+
+.hud-brigade {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  background: #262626;
+  color: var(--text-main);
+}
+
+.hud-telemetry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  background: rgba(13, 13, 13, 0.9);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.test-mode-toolbar {
+  position: absolute;
+  top: 74px;
+  left: 10px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* HUD Inferior */
+.combat-hud-bottom {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: env(safe-area-inset-bottom, 10px);
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.ammo-panel {
+  align-self: flex-start;
+  background: rgba(13, 13, 13, 0.92);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ammo-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.ammo-current {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.ammo-sep,
+.ammo-max {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.weapon-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.weapon-meta strong {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.weapon-meta small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.reload-progress-wrap {
+  position: absolute;
+  inset: 0;
+  background: #0d0d0d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reload-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #262626;
+  transition: width 0.05s linear;
+}
+
+.reload-progress-text {
+  position: relative;
+  z-index: 2;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.tactical-controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.tac-action-btn {
+  background: rgba(13, 13, 13, 0.92);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 11px 6px;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.tac-action-btn:active {
+  background: #1f1f1f;
+}
+
+/* ==========================================================================
+   3. PANTALLA DE ELIMINACIÓN
+   ========================================================================== */
+.elimination-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(127, 29, 29, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.elimination-content {
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.elimination-title {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.elimination-killer {
+  font-size: 0.95rem;
+  color: #fecaca;
+}
+
+.elimination-details {
+  font-size: 0.82rem;
+  color: #fca5a5;
+}
+
+.elimination-actions {
+  margin-top: 12px;
+}
+
+.btn-tactical.large {
+  padding: 12px 24px;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   4. MODALES (ARMERÍA, INSTRUCCIONES Y RED)
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.modal-window {
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-window.small-modal {
+  max-width: 440px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-header h2 {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.modal-header p {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.btn-close-modal {
+  background: var(--bg-input);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.armory-view {
+  padding: 14px 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.category-tabs-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cat-tab-btn {
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.cat-tab-btn.active {
+  background: var(--text-main);
+  color: var(--bg-dark);
+  border-color: var(--text-main);
+  font-weight: 600;
+}
+
+.weapons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.weapon-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weapon-card.selected {
+  border-color: var(--text-main);
+}
+
+.weapon-card-img-wrap {
+  height: 88px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.weapon-card-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.weapon-card-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.weapon-stats-list {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+}
+
+.weapon-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+/* Lista de Instrucciones en 4 pasos */
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instructions-list li {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.instructions-list li strong {
+  display: block;
+  color: var(--text-main);
+  margin-bottom: 3px;
+  font-size: 0.85rem;
+}
+
+.workshop-actions.split {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
